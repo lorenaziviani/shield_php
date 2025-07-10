@@ -1,0 +1,67 @@
+{
+    "dashboard": {
+      "id": null,
+      "title": "ShieldPHP Security Metrics",
+      "timezone": "browser",
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Total Blocked Requests",
+          "targets": [
+            {
+              "expr": "shieldphp_blocked_requests_total",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 }
+        },
+        {
+          "type": "stat",
+          "title": "Blocked by Rate Limit",
+          "targets": [
+            {
+              "expr": "shieldphp_blocked_requests_rate_limit",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 4, "w": 8, "x": 8, "y": 0 }
+        },
+        {
+          "type": "stat",
+          "title": "Blocked by WAF",
+          "targets": [
+            {
+              "expr": "shieldphp_blocked_requests_waf",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 4, "w": 8, "x": 0, "y": 4 }
+        },
+        {
+          "type": "stat",
+          "title": "Unique Blocked IPs",
+          "targets": [
+            {
+              "expr": "shieldphp_blocked_ips_total",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 4, "w": 8, "x": 8, "y": 4 }
+        },
+        {
+          "type": "graph",
+          "title": "Blocked Requests Over Time",
+          "targets": [
+            {
+              "expr": "increase(shieldphp_blocked_requests_total[5m])",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 16, "x": 0, "y": 8 }
+        }
+      ],
+      "schemaVersion": 30,
+      "version": 1
+    },
+    "overwrite": false
+  }

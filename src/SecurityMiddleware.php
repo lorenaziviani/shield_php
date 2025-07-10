@@ -9,12 +9,14 @@ class SecurityMiddleware
     private RateLimiter $rateLimiter;
     private WAF $waf;
     private ?LoggerInterface $logger;
+    private ?Metrics $metrics;
 
-    public function __construct(RateLimiter $rateLimiter, WAF $waf, LoggerInterface $logger = null)
+    public function __construct(RateLimiter $rateLimiter, WAF $waf, LoggerInterface $logger = null, Metrics $metrics = null)
     {
         $this->rateLimiter = $rateLimiter;
         $this->waf = $waf;
         $this->logger = $logger;
+        $this->metrics = $metrics;
     }
 
     /**
@@ -34,6 +36,9 @@ class SecurityMiddleware
                     'data' => $requestData
                 ]);
             }
+            if ($this->metrics) {
+                $this->metrics->incrementBlockedRequest('rate_limit', $ip);
+            }
             http_response_code(429);
             echo 'Too Many Requests';
             exit;
@@ -45,6 +50,9 @@ class SecurityMiddleware
                     'endpoint' => $endpoint,
                     'data' => $requestData
                 ]);
+            }
+            if ($this->metrics) {
+                $this->metrics->incrementBlockedRequest('waf', $ip);
             }
             http_response_code(403);
             echo 'Forbidden: Malicious request detected.';
@@ -71,6 +79,9 @@ class SecurityMiddleware
                     'data' => $params
                 ]);
             }
+            if ($this->metrics) {
+                $this->metrics->incrementBlockedRequest('rate_limit', $ip);
+            }
             return new SecurityResponse(429, 'Too Many Requests');
         }
         if ($this->waf->isMalicious($params)) {
@@ -80,6 +91,9 @@ class SecurityMiddleware
                     'endpoint' => $endpoint,
                     'data' => $params
                 ]);
+            }
+            if ($this->metrics) {
+                $this->metrics->incrementBlockedRequest('waf', $ip);
             }
             return new SecurityResponse(403, 'Forbidden: Malicious request detected.');
         }
