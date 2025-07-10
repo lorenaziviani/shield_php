@@ -5,10 +5,17 @@ namespace ShieldPHP;
 class WAF
 {
     private array $customRules;
+    private array $compiledCustomPatterns = [];
 
     public function __construct(array $customRules = [])
     {
         $this->customRules = $customRules;
+        // Pré-compilar padrões customizados para otimizar
+        foreach ($customRules as $rule) {
+            if (!empty($rule['pattern'])) {
+                $this->compiledCustomPatterns[] = $rule['pattern'];
+            }
+        }
     }
 
     /**
@@ -19,6 +26,9 @@ class WAF
     public function isMalicious(array $requestData): bool
     {
         foreach ($requestData as $value) {
+            if (!is_string($value)) {
+                continue;
+            }
             if (
                 $this->detectSQLInjection($value) ||
                 $this->detectXSS($value) ||
@@ -95,11 +105,11 @@ class WAF
 
     private function detectCustomRules($value): bool
     {
-        if (!is_string($value) || empty($this->customRules)) {
+        if (empty($this->compiledCustomPatterns)) {
             return false;
         }
-        foreach ($this->customRules as $rule) {
-            if (!empty($rule['pattern']) && preg_match($rule['pattern'], $value)) {
+        foreach ($this->compiledCustomPatterns as $pattern) {
+            if (preg_match($pattern, $value)) {
                 return true;
             }
         }

@@ -79,3 +79,35 @@ shieldphp_blocked_ips_total 5
 - Regras customizadas: via `rules.json` ou `rules.yaml`
 
 Consulte os arquivos de exemplo e a documentação das classes para detalhes sobre cada configuração e regra.
+
+## Testes de Carga (Benchmark)
+
+### ApacheBench
+
+Execute o script de benchmark:
+
+```bash
+chmod +x bench/ab-test.sh
+./bench/ab-test.sh
+```
+
+- `-n 1000`: total de requisições
+- `-c 50`: concorrência
+
+### Artillery
+
+Instale o Artillery (Node.js):
+
+```bash
+npm install -g artillery
+```
+
+Execute o teste:
+
+```bash
+artillery run bench/artillery-test.yml
+```
+
+- O teste simula 10 requisições por segundo durante 60 segundos no endpoint `/metrics`.
+
+Ajuste os parâmetros conforme necessário para simular diferentes cenários de carga.
