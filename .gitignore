@@ -1,0 +1,9 @@
+vendor/
+.env
+*.log
+.idea/
+.vscode/
+.DS_Store
+docker-compose.override.yml 
+.gitconfig*
+git-switch.sh
