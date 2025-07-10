@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Block base64 encoded strings",
+    "pattern": "/([A-Za-z0-9+\/]{40,}=*)/"
+  },
+  {
+    "name": "Block suspicious eval usage",
+    "pattern": "/eval\s*\(/i"
+  }
+] 

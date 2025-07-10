@@ -4,6 +4,13 @@ namespace ShieldPHP;
 
 class WAF
 {
+    private array $customRules;
+
+    public function __construct(array $customRules = [])
+    {
+        $this->customRules = $customRules;
+    }
+
     /**
      * Verifica se a requisição contém padrões de SQL Injection.
      * @param array $requestData Dados da requisição (ex: $_GET, $_POST, $_REQUEST)
@@ -15,7 +22,8 @@ class WAF
             if (
                 $this->detectSQLInjection($value) ||
                 $this->detectXSS($value) ||
-                $this->detectShellInjection($value)
+                $this->detectShellInjection($value) ||
+                $this->detectCustomRules($value)
             ) {
                 return true;
             }
@@ -79,6 +87,19 @@ class WAF
         ];
         foreach ($patterns as $pattern) {
             if (preg_match($pattern, $value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function detectCustomRules($value): bool
+    {
+        if (!is_string($value) || empty($this->customRules)) {
+            return false;
+        }
+        foreach ($this->customRules as $rule) {
+            if (!empty($rule['pattern']) && preg_match($rule['pattern'], $value)) {
                 return true;
             }
         }
