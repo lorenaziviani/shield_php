@@ -1,9 +1,22 @@
+# Composer
 vendor/
+composer.lock
+
+# Git
+.gitconfig*
+git-switch.sh
+
+# Env
 .env
 *.log
+
+# IDEs
 .idea/
 .vscode/
 .DS_Store
-docker-compose.override.yml 
-.gitconfig*
-git-switch.sh
+
+# Docker
+/docker-compose.override.yml
+
+# PHPUnit
+.phpunit.result.cache

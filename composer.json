@@ -17,5 +17,8 @@
       "name": "Seu Nome",
       "email": "seu@email.com"
     }
-  ]
-} 
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "^12.2"
+  }
+}
