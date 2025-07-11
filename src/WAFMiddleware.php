@@ -2,6 +2,8 @@
 
 namespace ShieldPHP;
 
+use ShieldPHP\WAFResponse;
+
 class WAFMiddleware
 {
     private WAF $waf;
@@ -12,7 +14,7 @@ class WAFMiddleware
     }
 
     /**
-     * Middleware procedural: bloqueia execução se detectar ataque.
+     * Middleware procedural: block execution if attack is detected.
      *
      * @param array $requestData
      */
@@ -26,10 +28,10 @@ class WAFMiddleware
     }
 
     /**
-     * Exemplo de integração PSR-15 (para frameworks como Slim, Mezzio, etc)
+     * Example of PSR-15 integration (for frameworks like Slim, Mezzio, etc)
      *
-     * @param $request
-     * @param $handler
+     * @param  $request
+     * @param  $handler
      * @return mixed
      */
     public function process($request, $handler)
@@ -39,17 +41,8 @@ class WAFMiddleware
             $request->getParsedBody() ?? []
         );
         if ($this->waf->isMalicious($params)) {
-            return new \ShieldPHP\WAFResponse();
+            return new WAFResponse();
         }
         return $handler->handle($request);
     }
 }
-
-class WAFResponse
-{
-    public function __toString()
-    {
-        http_response_code(403);
-        return 'Forbidden: Malicious request detected.';
-    }
-} 

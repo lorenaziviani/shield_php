@@ -10,7 +10,7 @@ class WAF
     public function __construct(array $customRules = [])
     {
         $this->customRules = $customRules;
-        // Pré-compilar padrões customizados para otimizar
+        // Pre-compile custom patterns to optimize
         foreach ($customRules as $rule) {
             if (!empty($rule['pattern'])) {
                 $this->compiledCustomPatterns[] = $rule['pattern'];
@@ -19,9 +19,10 @@ class WAF
     }
 
     /**
-     * Verifica se a requisição contém padrões de SQL Injection.
-     * @param array $requestData Dados da requisição (ex: $_GET, $_POST, $_REQUEST)
-     * @return bool true se for malicioso, false caso contrário
+     * Verify if the request contains SQL Injection patterns.
+     *
+     * @param  array $requestData Request data (ex: $_GET, $_POST, $_REQUEST)
+     * @return bool true if malicious, false otherwise
      */
     public function isMalicious(array $requestData): bool
     {
@@ -30,10 +31,10 @@ class WAF
                 continue;
             }
             if (
-                $this->detectSQLInjection($value) ||
-                $this->detectXSS($value) ||
-                $this->detectShellInjection($value) ||
-                $this->detectCustomRules($value)
+                $this->detectSQLInjection($value)
+                || $this->detectXSS($value)
+                || $this->detectShellInjection($value)
+                || $this->detectCustomRules($value)
             ) {
                 return true;
             }
@@ -46,7 +47,8 @@ class WAF
         if (!is_string($value)) {
             return false;
         }
-        // Regras básicas de SQLi (pode ser expandido depois)
+        // Basic SQLi rules
+        // TODO: expand rules
         $patterns = [
             '/(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bOR\b|\bAND\b)/i',
             '/(--|#|\/\*)/',
@@ -67,7 +69,7 @@ class WAF
         if (!is_string($value)) {
             return false;
         }
-        // Regras básicas de XSS
+        // Basic XSS rules
         $patterns = [
             '/<script.*?>.*?<\/script>/is',
             '/on\w+\s*=\s*([\"\"]).*?\1/is',
@@ -88,7 +90,7 @@ class WAF
         if (!is_string($value)) {
             return false;
         }
-        // Regras básicas de shell injection
+        // Basic shell injection rules
         $patterns = [
             '/(;|&&|\|\|)/',
             '/\b(cat|ls|rm|wget|curl|nc|bash|sh)\b/i',
@@ -115,4 +117,4 @@ class WAF
         }
         return false;
     }
-} 
+}

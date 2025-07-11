@@ -44,7 +44,7 @@ class WAFTest extends TestCase
         $benign = [
             'name' => 'Maria',
             'email' => 'maria@example.com',
-            'comment' => 'Olá, tudo bem?'
+            'comment' => 'Hello, how are you?'
         ];
         $this->assertFalse($this->waf->isMalicious($benign));
     }

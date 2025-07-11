@@ -2,7 +2,8 @@
 
 namespace ShieldPHP;
 
-use Psr\Log\LoggerInterface;
+use ShieldPHP\LoggerInterface;
+use ShieldPHP\SecurityResponse;
 
 class SecurityMiddleware
 {
@@ -11,8 +12,12 @@ class SecurityMiddleware
     private ?LoggerInterface $logger;
     private ?Metrics $metrics;
 
-    public function __construct(RateLimiter $rateLimiter, WAF $waf, LoggerInterface $logger = null, Metrics $metrics = null)
-    {
+    public function __construct(
+        RateLimiter $rateLimiter,
+        WAF $waf,
+        ?LoggerInterface $logger = null,
+        ?Metrics $metrics = null
+    ) {
         $this->rateLimiter = $rateLimiter;
         $this->waf = $waf;
         $this->logger = $logger;
@@ -20,21 +25,25 @@ class SecurityMiddleware
     }
 
     /**
-     * Middleware procedural: bloqueia se for malicioso ou exceder limite.
+     * Middleware procedural: block if malicious or rate limit exceeded.
      *
      * @param string $ip
      * @param string $endpoint
-     * @param array $requestData
+     * @param array  $requestData
      */
     public function handle(string $ip, string $endpoint, array $requestData)
     {
         if (!$this->rateLimiter->allow($ip, $endpoint)) {
             if ($this->logger) {
-                $this->logger->log('warning', 'Rate limit exceeded', [
+                $this->logger->log(
+                    'warning',
+                    'Rate limit exceeded',
+                    [
                     'ip' => $ip,
                     'endpoint' => $endpoint,
                     'data' => $requestData
-                ]);
+                    ]
+                );
             }
             if ($this->metrics) {
                 $this->metrics->incrementBlockedRequest('rate_limit', $ip);
@@ -45,11 +54,15 @@ class SecurityMiddleware
         }
         if ($this->waf->isMalicious($requestData)) {
             if ($this->logger) {
-                $this->logger->log('alert', 'Malicious request blocked', [
+                $this->logger->log(
+                    'alert',
+                    'Malicious request blocked',
+                    [
                     'ip' => $ip,
                     'endpoint' => $endpoint,
                     'data' => $requestData
-                ]);
+                    ]
+                );
             }
             if ($this->metrics) {
                 $this->metrics->incrementBlockedRequest('waf', $ip);
@@ -61,7 +74,7 @@ class SecurityMiddleware
     }
 
     /**
-     * Exemplo de integração PSR-15
+     * Example of PSR-15 integration
      */
     public function process($request, $handler)
     {
@@ -73,11 +86,15 @@ class SecurityMiddleware
         );
         if (!$this->rateLimiter->allow($ip, $endpoint)) {
             if ($this->logger) {
-                $this->logger->log('warning', 'Rate limit exceeded', [
+                $this->logger->log(
+                    'warning',
+                    'Rate limit exceeded',
+                    [
                     'ip' => $ip,
                     'endpoint' => $endpoint,
                     'data' => $params
-                ]);
+                    ]
+                );
             }
             if ($this->metrics) {
                 $this->metrics->incrementBlockedRequest('rate_limit', $ip);
@@ -86,11 +103,15 @@ class SecurityMiddleware
         }
         if ($this->waf->isMalicious($params)) {
             if ($this->logger) {
-                $this->logger->log('alert', 'Malicious request blocked', [
+                $this->logger->log(
+                    'alert',
+                    'Malicious request blocked',
+                    [
                     'ip' => $ip,
                     'endpoint' => $endpoint,
                     'data' => $params
-                ]);
+                    ]
+                );
             }
             if ($this->metrics) {
                 $this->metrics->incrementBlockedRequest('waf', $ip);
@@ -100,19 +121,3 @@ class SecurityMiddleware
         return $handler->handle($request);
     }
 }
-
-class SecurityResponse
-{
-    private int $code;
-    private string $message;
-    public function __construct(int $code, string $message)
-    {
-        $this->code = $code;
-        $this->message = $message;
-    }
-    public function __toString()
-    {
-        http_response_code($this->code);
-        return $this->message;
-    }
-} 

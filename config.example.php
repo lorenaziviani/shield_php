@@ -1,5 +1,5 @@
 <?php
-
+ 
 return [
     'env' => getenv('APP_ENV') ?: 'dev',
     'debug' => getenv('APP_DEBUG') === 'true',

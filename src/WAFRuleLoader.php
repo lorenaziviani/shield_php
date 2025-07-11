@@ -32,4 +32,4 @@ class WAFRuleLoader
         }
         return $data;
     }
-} 
+}

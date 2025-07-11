@@ -8,7 +8,9 @@ class WAFRedisTest extends TestCase
 {
     public function testDetectsCustomRuleFromJson()
     {
-        $rules = WAFRuleLoader::loadFromJson(__DIR__ . '/../../rules.json');
+        $rulesPath = realpath(__DIR__ . '/../../rules.json');
+        $this->assertFileExists($rulesPath, 'rules.json não encontrado');
+        $rules = WAFRuleLoader::loadFromJson($rulesPath);
         $waf = new WAF($rules);
         $malicious = [
             'payload' => base64_encode(random_bytes(40)),

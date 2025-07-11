@@ -16,11 +16,11 @@ class RateLimiter
     }
 
     /**
-     * Verifica se o IP ultrapassou o limite de requisições para um endpoint.
+     * Verify if the IP exceeded the limit of requests for an endpoint.
      *
-     * @param string $ip
-     * @param string $endpoint
-     * @return bool true se permitido, false se bloqueado
+     * @param  string $ip
+     * @param  string $endpoint
+     * @return bool true if allowed, false if blocked
      */
     public function allow(string $ip, string $endpoint): bool
     {
@@ -36,4 +36,4 @@ class RateLimiter
     {
         return sprintf('ratelimit:%s:%s', $ip, md5($endpoint));
     }
-} 
+}

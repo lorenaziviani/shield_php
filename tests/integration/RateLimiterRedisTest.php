@@ -12,8 +12,9 @@ class RateLimiterRedisTest extends TestCase
 
     protected function setUp(): void
     {
+        $redisHost = getenv('REDIS_HOST') ?: '127.0.0.1';
         $this->redis = new Redis();
-        $this->redis->connect('redis', 6379);
+        $this->redis->connect($redisHost, 6379);
         $this->redis->flushAll();
         $this->limiter = new RateLimiter($this->redis, 2, 10);
     }

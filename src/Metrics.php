@@ -13,7 +13,7 @@ class Metrics
         $this->prefix = $prefix;
     }
 
-    public function incrementBlockedRequest(string $reason, string $ip = null): void
+    public function incrementBlockedRequest(string $reason, ?string $ip = null): void
     {
         $this->redis->incr($this->prefix . 'blocked_requests');
         $this->redis->incr($this->prefix . 'blocked_requests:' . $reason);
@@ -42,4 +42,4 @@ class Metrics
     {
         return (int) $this->redis->get($this->prefix . 'blocked_requests:ip:' . $ip) ?: 0;
     }
-} 
+}
